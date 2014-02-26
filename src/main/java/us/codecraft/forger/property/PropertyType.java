@@ -3,7 +3,7 @@ package us.codecraft.forger.property;
 import java.util.Map;
 
 /**
- * @author yihua.huang@dianping.com
+ * @author code4crafter@gmail.com
  */
 public enum PropertyType {
 

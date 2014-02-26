@@ -3,7 +3,7 @@ package us.codecraft.forger.property;
 import java.lang.reflect.Field;
 
 /**
- * @author yihua.huang@dianping.com
+ * @author code4crafter@gmail.com
  */
 public class Property {
 

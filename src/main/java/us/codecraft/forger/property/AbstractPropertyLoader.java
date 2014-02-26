@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author yihua.huang@dianping.com
+ * @author code4crafter@gmail.com
  */
 public abstract class AbstractPropertyLoader implements PropertyLoader {
 

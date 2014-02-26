@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author yihua.huang@dianping.com
+ * @author code4crafter@gmail.com
  */
 public class SimpleFieldPropertyLoader extends AbstractPropertyLoader {
 

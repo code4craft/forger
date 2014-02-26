@@ -3,7 +3,7 @@ package us.codecraft.forger;
 import us.codecraft.forger.property.Inject;
 
 /**
- * @author yihua.huang@dianping.com
+ * @author code4crafter@gmail.com
  */
 public class Foo {
 
