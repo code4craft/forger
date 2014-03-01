@@ -7,25 +7,25 @@ import java.util.List;
  * @author code4crafter@gmail.com
  * @since 0.3.2
  */
-public abstract class BasicTypeFormatter<T> implements ObjectFormatter<T> {
+public abstract class BasicTypeFormatter<T> implements TypeFormatter<T> {
 
     @Override
-    public T format(String raw) {
-        if (raw == null) {
+    public T format(String text) {
+        if (text == null) {
             return null;
         }
-        raw = raw.trim();
-        return formatTrimmed(raw);
+        text = text.trim();
+        return formatTrimmed(text);
     }
 
     @Override
-    public T format(String raw, String[] extra) {
-        return format(raw);
+    public T format(String text, String[] params) {
+        return format(text);
     }
 
     protected abstract T formatTrimmed(String raw);
 
-    public static final List<Class<? extends ObjectFormatter>> basicTypeFormatters = Arrays.<Class<? extends ObjectFormatter>>asList(IntegerFormatter.class,
+    public static final List<Class<? extends TypeFormatter>> basicTypeFormatters = Arrays.<Class<? extends TypeFormatter>>asList(IntegerFormatter.class,
             LongFormatter.class, DoubleFormatter.class, FloatFormatter.class, ShortFormatter.class,
             CharactorFormatter.class, ByteFormatter.class, BooleanFormatter.class, DateFormatter.class, StringFormatter.class);
 
@@ -146,16 +146,16 @@ public abstract class BasicTypeFormatter<T> implements ObjectFormatter<T> {
         }
     }
 
-    public static class StringFormatter implements ObjectFormatter<String> {
+    public static class StringFormatter implements TypeFormatter<String> {
 
         @Override
-        public String format(String raw) {
-            return raw;
+        public String format(String text) {
+            return text;
         }
 
         @Override
-        public String format(String raw, String[] extra) {
-            return format(raw);
+        public String format(String text, String[] params) {
+            return format(text);
         }
 
         @Override

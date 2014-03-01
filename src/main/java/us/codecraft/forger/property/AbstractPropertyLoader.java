@@ -2,10 +2,7 @@ package us.codecraft.forger.property;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import us.codecraft.forger.property.format.BasicTypeFormatter;
-import us.codecraft.forger.property.format.Formatter;
-import us.codecraft.forger.property.format.ObjectFormatter;
-import us.codecraft.forger.property.format.ObjectFormatterFactory;
+import us.codecraft.forger.property.format.*;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -16,12 +13,12 @@ import java.util.Map;
  */
 public abstract class AbstractPropertyLoader implements PropertyLoader {
 
-    private ObjectFormatterFactory objectFormatterFactory = new ObjectFormatterFactory();
+    private TypeFormatterFactory typeFormatterFactory = new TypeFormatterFactory();
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected ObjectFormatterFactory getObjectFormatterFactory() {
-        return objectFormatterFactory;
+    protected TypeFormatterFactory getTypeFormatterFactory() {
+        return typeFormatterFactory;
     }
 
     @Override
@@ -34,8 +31,8 @@ public abstract class AbstractPropertyLoader implements PropertyLoader {
             }
             switch (property.getType()) {
                 case PropertyString:
-                    ObjectFormatter objectFormatter = property.getObjectFormatter();
-                    Object fieldValue = objectFormatter.format(String.valueOf(value), property.getExtras());
+                    ObjectFormatter typeFormatter = property.getObjectFormatter();
+                    Object fieldValue = typeFormatter.format(String.valueOf(value));
                     try {
                         property.getField().set(object, fieldValue);
                     } catch (IllegalAccessException e) {
@@ -54,26 +51,32 @@ public abstract class AbstractPropertyLoader implements PropertyLoader {
         return object;
     }
 
+    protected ObjectFormatter prepareParam(TypeFormatter objectFormatter, String[] params) {
+        if (params == null) {
+            return objectFormatter;
+        }
+        return new ObjectFormatterWithParams().setTypeFormatter(objectFormatter).setParams(params);
+    }
+
     protected ObjectFormatter getObjectFormatter(Field field) {
         if (field.isAnnotationPresent(Formatter.class)) {
             Formatter formatter = field.getAnnotation(Formatter.class);
             if (formatter.formatter() != null) {
-                ObjectFormatter objectFormatter = objectFormatterFactory.get(formatter.formatter());
-                if (objectFormatter != null) {
-                    return objectFormatter;
+                TypeFormatter typeFormatter = typeFormatterFactory.get(formatter.formatter());
+                if (typeFormatter != null) {
+                    return typeFormatter;
                 }
-                objectFormatterFactory.put(formatter.formatter());
-                return objectFormatterFactory.get(formatter.formatter());
-            }
-            if (!formatter.subClazz().equals(Void.class)) {
-                ObjectFormatter objectFormatter = objectFormatterFactory.get(formatter.subClazz());
-                if (objectFormatter == null) {
-                    throw new IllegalArgumentException("No objectFormatter for class " + formatter.subClazz());
+                typeFormatterFactory.put(formatter.formatter());
+                return prepareParam(typeFormatterFactory.get(formatter.formatter()), formatter.value());
+            } else if (!formatter.subClazz().equals(Void.class)) {
+                TypeFormatter typeFormatter = typeFormatterFactory.get(formatter.subClazz());
+                if (typeFormatter == null) {
+                    throw new IllegalArgumentException("No typeFormatter for class " + formatter.subClazz());
                 }
-                return objectFormatter;
+                return prepareParam(typeFormatterFactory.get(formatter.formatter()), formatter.value());
             }
         }
-        return getObjectFormatterFactory().get(BasicTypeFormatter.detectBasicClass(field.getType()));
+        return getTypeFormatterFactory().get(BasicTypeFormatter.detectBasicClass(field.getType()));
     }
 
 }

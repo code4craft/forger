@@ -15,8 +15,6 @@ public class Property {
 
     private Field field;
 
-    private String[] extras;
-
     private ObjectFormatter objectFormatter;
 
     public ObjectFormatter getObjectFormatter() {
@@ -53,14 +51,6 @@ public class Property {
     public Property setField(Field field) {
         this.field = field;
         return this;
-    }
-
-    public String[] getExtras() {
-        return extras;
-    }
-
-    public void setExtras(String[] extras) {
-        this.extras = extras;
     }
 
     public static Property fromField(Field field) {

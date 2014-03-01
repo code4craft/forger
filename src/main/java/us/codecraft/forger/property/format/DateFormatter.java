@@ -9,19 +9,19 @@ import java.util.Date;
  * @author code4crafter@gmail.com
  * @since 0.3.2
  */
-public class DateFormatter implements ObjectFormatter<Date> {
+public class DateFormatter implements TypeFormatter<Date> {
 
     public static final String[] DEFAULT_PATTERN = new String[]{"yyyy-MM-dd HH:mm"};
 
     @Override
-    public Date format(String raw) {
-        return format(raw,DEFAULT_PATTERN);
+    public Date format(String text) {
+        return format(text,DEFAULT_PATTERN);
     }
 
     @Override
-    public Date format(String raw, String[] extra) {
+    public Date format(String text, String[] params) {
         try {
-            return DateUtils.parseDate(raw, extra);
+            return DateUtils.parseDate(text, params);
         } catch (ParseException e) {
             throw new IllegalArgumentException(e);
         }
