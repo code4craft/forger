@@ -1,5 +1,6 @@
 package us.codecraft.forger.property;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -10,10 +11,10 @@ public enum PropertyType {
     PropertyString,PropertyMap,PropertyList;
 
     public static PropertyType from(Class clazz){
-        if (clazz.isAssignableFrom(Map.class)){
+        if (Map.class.isAssignableFrom(clazz)){
             return PropertyMap;
         }
-        if (clazz.isAssignableFrom(Iterable.class)){
+        if (List.class.isAssignableFrom(clazz)){
             return PropertyList;
         }
         return PropertyString;

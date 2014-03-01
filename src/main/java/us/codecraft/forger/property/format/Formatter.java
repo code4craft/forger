@@ -28,7 +28,7 @@ public @interface Formatter {
      *
      * @return the class of field
      */
-    Class subClazz() default Void.class;
+    Class subClazz() default String.class;
 
     /**
      * If there are more than one formatter for a class, just specify the implement.

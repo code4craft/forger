@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import us.codecraft.forger.property.format.*;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,10 +31,10 @@ public abstract class AbstractPropertyLoader implements PropertyLoader {
             if (value == null) {
                 throw new IllegalArgumentException("Config for property " + property.getName() + " is missing!");
             }
+            ObjectFormatter objectFormatter = property.getObjectFormatter();
             switch (property.getType()) {
                 case PropertyString:
-                    ObjectFormatter typeFormatter = property.getObjectFormatter();
-                    Object fieldValue = typeFormatter.format(String.valueOf(value));
+                    Object fieldValue = objectFormatter.format(String.valueOf(value));
                     try {
                         property.getField().set(object, fieldValue);
                     } catch (IllegalAccessException e) {
@@ -40,18 +42,41 @@ public abstract class AbstractPropertyLoader implements PropertyLoader {
                     }
                     break;
                 case PropertyList:
-                    if (!List.class.isAssignableFrom(object.getClass())) {
+                    if (!List.class.isAssignableFrom(value.getClass())) {
                         throw new IllegalArgumentException("Config for property " + property.getName() + " should be subclass of List!");
                     }
-
+                    List listField = new ArrayList();
+                    List<String> listConfigs = (List) value;
+                    for (String listConfig : listConfigs) {
+                        listField.add(objectFormatter.format(listConfig));
+                    }
+                    try {
+                        property.getField().set(object, listField);
+                    } catch (IllegalAccessException e) {
+                        logger.warn("Set field " + property.getField() + " error!", e);
+                    }
                     break;
-                //TODO other type
+                case PropertyMap:
+                    if (!Map.class.isAssignableFrom(value.getClass())) {
+                        throw new IllegalArgumentException("Config for property " + property.getName() + " should be subclass of List!");
+                    }
+                    Map mapField = new HashMap();
+                    Map<String, String> mapConfigs = (Map<String, String>) value;
+                    for (Map.Entry<String, String> entry : mapConfigs.entrySet()) {
+                        mapField.put(entry.getKey(), objectFormatter.format(entry.getValue()));
+                    }
+                    try {
+                        property.getField().set(object, mapField);
+                    } catch (IllegalAccessException e) {
+                        logger.warn("Set field " + property.getField() + " error!", e);
+                    }
+                    break;
             }
         }
         return object;
     }
 
-    protected ObjectFormatter prepareParam(TypeFormatter objectFormatter, String[] params) {
+    protected ObjectFormatter prepareTypeFormatterParam(TypeFormatter objectFormatter, String[] params) {
         if (params == null) {
             return objectFormatter;
         }
@@ -59,24 +84,29 @@ public abstract class AbstractPropertyLoader implements PropertyLoader {
     }
 
     protected ObjectFormatter getObjectFormatter(Field field) {
+        Class type = field.getType();
+        if (List.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type)) {
+            type = String.class;
+        }
         if (field.isAnnotationPresent(Formatter.class)) {
             Formatter formatter = field.getAnnotation(Formatter.class);
-            if (formatter.formatter() != null) {
-                TypeFormatter typeFormatter = typeFormatterFactory.get(formatter.formatter());
+            if (!formatter.formatter().equals(TypeFormatter.class)) {
+                TypeFormatter typeFormatter = typeFormatterFactory.getByFormatterClass(formatter.formatter());
                 if (typeFormatter != null) {
-                    return typeFormatter;
+                    return prepareTypeFormatterParam(typeFormatter,formatter.value());
                 }
                 typeFormatterFactory.put(formatter.formatter());
-                return prepareParam(typeFormatterFactory.get(formatter.formatter()), formatter.value());
-            } else if (!formatter.subClazz().equals(Void.class)) {
-                TypeFormatter typeFormatter = typeFormatterFactory.get(formatter.subClazz());
+                return prepareTypeFormatterParam(typeFormatterFactory.getByFormatterClass(formatter.formatter()), formatter.value());
+            } else if (!formatter.subClazz().equals(String.class)) {
+                type = formatter.subClazz();
+                TypeFormatter typeFormatter = typeFormatterFactory.get(type);
                 if (typeFormatter == null) {
-                    throw new IllegalArgumentException("No typeFormatter for class " + formatter.subClazz());
+                    throw new IllegalArgumentException("No typeFormatter for class " + type);
                 }
-                return prepareParam(typeFormatterFactory.get(formatter.formatter()), formatter.value());
+                return prepareTypeFormatterParam(typeFormatter, formatter.value());
             }
         }
-        return getTypeFormatterFactory().get(BasicTypeFormatter.detectBasicClass(field.getType()));
+        return getTypeFormatterFactory().get(BasicTypeFormatter.detectBasicClass(type));
     }
 
 }

@@ -46,4 +46,8 @@ public class TypeFormatterFactory {
     public TypeFormatter get(Class<?> clazz) {
         return objectFormatterMapWithPropertyAsKey.get(clazz);
     }
+
+    public TypeFormatter getByFormatterClass(Class<?> clazz) {
+        return objectFormatterMapWithClassAsKey.get(clazz);
+    }
 }
