@@ -2,9 +2,11 @@ package us.codecraft.forger;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
+import us.codecraft.forger.compiler.GroovyForgerCompiler;
 import us.codecraft.forger.property.AnnotationPropertyLoader;
 import us.codecraft.forger.property.SimpleFieldPropertyLoader;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,11 +28,21 @@ public class ForgerFactoryTest {
     }
 
     @Test
-    public void testForgerCreateByClassAnnotation() throws Exception {
+      public void testForgerCreateByClassAnnotation() throws Exception {
         ForgerFactory forgerFactory = new ForgerFactory(new AnnotationPropertyLoader(), null);
         Forger<Foo> forger = forgerFactory.<Foo>create(Foo.class);
         Foo foo = forger.forge(ImmutableMap.<String, Object>of("fooa", "test"));
         assertThat(foo.getFoo()).isEqualTo("test");
+    }
+
+    @Test
+    public void testForgerCreateByClassAnnotationCompile() throws Exception {
+        ForgerFactory forgerFactory = new ForgerFactory(new AnnotationPropertyLoader(), new GroovyForgerCompiler());
+        Forger forger = forgerFactory.<Foo>compile(Foo.SOURCE_CODE);
+        Object foo = forger.forge(ImmutableMap.<String, Object>of("fooa", "test"));
+        Field field = forger.getClazz().getDeclaredField("foo");
+        field.setAccessible(true);
+        assertThat(field.get(foo)).isEqualTo("test");
     }
 
     @Test

@@ -16,4 +16,22 @@ public class Foo {
         return foo;
     }
 
+    public static final String SOURCE_CODE = "import us.codecraft.forger.property.Inject;\n" +
+            "import us.codecraft.forger.property.format.Formatter;\n" +
+            "\n" +
+            "/**\n" +
+            " * @author code4crafter@gmail.com\n" +
+            " */\n" +
+            "public class Foo {\n" +
+            "\n" +
+            "    @Formatter(\"\")\n" +
+            "    @Inject(\"fooa\")\n" +
+            "    private String foo;\n" +
+            "\n" +
+            "    public String getFoo() {\n" +
+            "        return foo;\n" +
+            "    }\n" +
+            "\n" +
+            "}";
+
 }

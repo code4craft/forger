@@ -30,4 +30,7 @@ public class Forger<T> {
         return propertyLoader.getProperties(clazz);
     }
 
+    public Class<T> getClazz() {
+        return clazz;
+    }
 }
