@@ -1,5 +1,7 @@
 package us.codecraft.forger.property;
 
+import us.codecraft.forger.property.format.ObjectFormatter;
+
 import java.lang.reflect.Field;
 
 /**
@@ -15,17 +17,15 @@ public class Property {
 
     private String[] extras;
 
-    public Property(String name, PropertyType type, Field field) {
-        this.name = name;
-        this.type = type;
-        this.field = field;
+    private ObjectFormatter objectFormatter;
+
+    public ObjectFormatter getObjectFormatter() {
+        return objectFormatter;
     }
 
-    public Property(String name, PropertyType type, Field field, String[] extras) {
-        this.name = name;
-        this.type = type;
-        this.field = field;
-        this.extras = extras;
+    public Property setObjectFormatter(ObjectFormatter objectFormatter) {
+        this.objectFormatter = objectFormatter;
+        return this;
     }
 
     public String getName() {
@@ -64,7 +64,7 @@ public class Property {
     }
 
     public static Property fromField(Field field) {
-        return new Property(field.getName(), PropertyType.from(field.getType()), field);
+        return new Property().setName(field.getName()).setType(PropertyType.from(field.getType())).setField(field);
     }
 
 }

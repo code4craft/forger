@@ -23,6 +23,7 @@ public class AnnotationPropertyLoader extends AbstractPropertyLoader {
                 if (inject.value().length() > 0) {
                     property.setName(inject.value());
                 }
+                property.setObjectFormatter(getObjectFormatter(field));
                 properties.add(property);
             }
         }

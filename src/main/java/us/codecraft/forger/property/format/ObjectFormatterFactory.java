@@ -1,5 +1,8 @@
 package us.codecraft.forger.property.format;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -9,7 +12,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ObjectFormatterFactory {
 
-    private Map<Class, ObjectFormatter> formatterMap = new ConcurrentHashMap<Class, ObjectFormatter>();
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    private Map<Class, ObjectFormatter> objectFormatterMapWithPropertyAsKey = new ConcurrentHashMap<Class, ObjectFormatter>();
+
+    private Map<Class, ObjectFormatter> objectFormatterMapWithClassAsKey = new ConcurrentHashMap<Class, ObjectFormatter>();
 
     public ObjectFormatterFactory() {
         initFormatterMap();
@@ -22,18 +29,21 @@ public class ObjectFormatterFactory {
         put(DateFormatter.class);
     }
 
-    public void put(Class<? extends ObjectFormatter> objectFormatterClazz) {
+    public synchronized void put(Class<? extends ObjectFormatter> objectFormatterClazz) {
         try {
             ObjectFormatter objectFormatter = objectFormatterClazz.newInstance();
-            formatterMap.put(objectFormatter.clazz(), objectFormatter);
+            if (objectFormatter.clazz() != null) {
+                objectFormatterMapWithPropertyAsKey.put(objectFormatter.clazz(), objectFormatter);
+            }
+            objectFormatterMapWithClassAsKey.put(objectFormatterClazz, objectFormatter);
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            logger.error("Init objectFormatter error", e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            logger.error("Init objectFormatter error", e);
         }
     }
 
     public ObjectFormatter get(Class<?> clazz) {
-        return formatterMap.get(clazz);
+        return objectFormatterMapWithPropertyAsKey.get(clazz);
     }
 }

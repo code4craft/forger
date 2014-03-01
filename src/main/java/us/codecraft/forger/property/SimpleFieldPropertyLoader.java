@@ -17,7 +17,7 @@ public class SimpleFieldPropertyLoader extends AbstractPropertyLoader {
             if (!field.isAccessible()){
                 field.setAccessible(true);
             }
-            properties.add(Property.fromField(field));
+            properties.add(Property.fromField(field).setObjectFormatter(getObjectFormatter(field)));
         }
         return properties;
     }
