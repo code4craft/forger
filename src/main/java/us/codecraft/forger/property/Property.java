@@ -32,24 +32,27 @@ public class Property {
         return name;
     }
 
-    public void setName(String name) {
+    public Property setName(String name) {
         this.name = name;
+        return this;
     }
 
     public PropertyType getType() {
         return type;
     }
 
-    public void setType(PropertyType type) {
+    public Property setType(PropertyType type) {
         this.type = type;
+        return this;
     }
 
     public Field getField() {
         return field;
     }
 
-    public void setField(Field field) {
+    public Property setField(Field field) {
         this.field = field;
+        return this;
     }
 
     public String[] getExtras() {
@@ -63,4 +66,5 @@ public class Property {
     public static Property fromField(Field field) {
         return new Property(field.getName(), PropertyType.from(field.getType()), field);
     }
+
 }

@@ -7,7 +7,7 @@ import us.codecraft.forger.property.Inject;
  */
 public class Foo {
 
-    @Inject("foo")
+    @Inject("fooa")
     private String foo;
 
     public String getFoo() {
