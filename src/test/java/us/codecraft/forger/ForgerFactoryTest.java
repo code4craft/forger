@@ -39,12 +39,11 @@ public class ForgerFactoryTest {
     public void testForgerCreateByClassAnnotationCompile() throws Exception {
         ForgerFactory forgerFactory = new ForgerFactory(new AnnotationPropertyLoader(), new GroovyForgerCompiler());
         Forger<Fooable> forger = forgerFactory.<Fooable>compile(Foo.SOURCE_CODE);
-        Object foo = forger.forge(ImmutableMap.<String, Object>of("fooa", "test"));
+        Fooable foo = forger.forge(ImmutableMap.<String, Object>of("fooa", "test"));
         Field field = forger.getClazz().getDeclaredField("foo");
         field.setAccessible(true);
         assertThat(field.get(foo)).isEqualTo("test");
-        Fooable fooable = forger.forge(ImmutableMap.<String, Object>of("fooa", "test"));
-        assertThat(fooable.foo()).isEqualTo("test");
+        assertThat(foo.foo()).isEqualTo("test");
     }
 
     @Test
