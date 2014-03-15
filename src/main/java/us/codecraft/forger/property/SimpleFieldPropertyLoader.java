@@ -1,6 +1,7 @@
 package us.codecraft.forger.property;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,9 @@ public class SimpleFieldPropertyLoader extends AbstractPropertyLoader {
         Field[] fields = clazz.getDeclaredFields();
         List<Property> properties = new ArrayList<Property>(fields.length);
         for (Field field : fields) {
+            if (Modifier.isStatic(field.getModifiers())){
+                continue;
+            }
             if (!field.isAccessible()){
                 field.setAccessible(true);
             }
